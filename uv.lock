@@ -82,7 +82,7 @@ wheels = [
 ]
 
 [[package]]
-name = "canvas-sync"
+name = "canvas-sync-py"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

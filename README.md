@@ -58,12 +58,12 @@ Follow these steps to get up and running quickly.
 
     Using `uv` (recommended):
     ```bash
-    uv add canvas-sync
-    uv pip install canvas-sync
+    uv add canvas-sync-py
+    uv pip install canvas-sync-py
     ```
     With `pip`:
     ```bash
-    pip install canvas-sync
+    pip install canvas-sync-py
     ```
     From source (developer mode):
     ```bash

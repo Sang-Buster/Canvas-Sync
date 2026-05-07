@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "canvas-sync"
+name = "canvas-sync-py"
 version = "0.1.0"
 description = "Synchronize modules, assignments and files from Canvas by Instructure to your local computer"
 readme = "README.md"
