@@ -4,7 +4,7 @@
   </a>
   <h1>Canvas-Sync</h1>
   <a href="https://deepwiki.com/Sang-Buster/Canvas-Sync"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
-  <a href="https://pypi.org/project/Canvas-Sync/"><img src="https://img.shields.io/pypi/v/Canvas-Sync" alt="PyPI"></a>
+  <a href="https://pypi.org/project/Canvas-Sync/"><img src="https://img.shields.io/pypi/v/canvas-sync-py" alt="PyPI"></a>
   <a href="https://github.com/Sang-Buster/Canvas-Sync/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Sang-Buster/Canvas-Sync" alt="License"></a>
   <a href="https://github.com/astral-sh/uv"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json" alt="uv"></a>
   <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
