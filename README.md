@@ -28,6 +28,8 @@
 
 <h2 align="center">Overview 📚</h2>
 
+<p align="center"><img src="https://raw.githubusercontent.com/Sang-Buster/Canvas-Sync/refs/heads/main/docs/images/overview.png" alt="Overview" /></p>
+
 Canvas-Sync mirrors your Canvas course structure locally so you can browse course materials offline. It downloads modules, assignments, pages, files, and optional external resources into a tidy folder layout.
 
 Key Features include: 
