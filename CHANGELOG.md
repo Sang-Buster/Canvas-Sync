@@ -3,6 +3,17 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.4.0] - 2026-05-07
+### Fixed
+- Progress bar now only shows courses that are actually being synced (skipped courses no longer appear)
+- Eliminated duplicate DOWNLOADING/SYNCED lines — each file now prints exactly one final status line
+- Replaced broken `str(self)` slice approach in `print_status` with a proper `_print_leaf` helper
+
+### Changed
+- All entity `__repr__` methods now use clean indent-based Rich markup instead of legacy tab/space alignment
+- Leaf items use icon-based status output: `↓` downloaded, `✓` already present, `✗` locked/failed, `⌁` URL shortcut
+- Container entities use colored `■` bullets; courses use `▶` (syncing) and `▷` (skipped)
+
 ## [0.3.0] - 2026-05-07
 ### Added
 - Rich progress bars for `canvas sync` with per-course task tracking
