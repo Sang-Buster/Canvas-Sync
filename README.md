@@ -1,199 +1,121 @@
-# Canvas-Sync
+<div align="center">
+   <a href="https://github.com/Sang-Buster/Canvas-Sync">
+      <img src="https://raw.githubusercontent.com/Sang-Buster/Canvas-Sync/refs/heads/main/docs/images/logo.png" width=30% alt="logo">
+   </a>
+   <h1>Canvas-Sync</h1>
+   <a href="https://deepwiki.com/Sang-Buster/Canvas-Sync"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+   <a href="https://pypi.org/project/Canvas-Sync/"><img src="https://img.shields.io/pypi/v/Canvas-Sync" alt="PyPI"></a>
+   <a href="https://github.com/Sang-Buster/Canvas-Sync/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Sang-Buster/Canvas-Sync" alt="License"></a>
+   <a href="https://github.com/astral-sh/uv"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json" alt="uv"></a>
+   <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
+   <a href="https://github.com/Sang-Buster/Canvas-Sync/commits/main"><img src="https://img.shields.io/github/last-commit/Sang-Buster/Canvas-Sync" alt="Last Commit"></a>
+   <h6><small>Synchronize Canvas LMS courses and files to a local folder, preserving course structure and organization.</small></h6>
+   <p><b>#Canvas &emsp; #Instructure &emsp; #LMS &emsp; #Synchronize &emsp; #Education</b></p>
 
-Automatically synchronize modules, assignments, and files from your Canvas LMS to your local computer.
+</div>
 
-## Overview
 
-Canvas-Sync helps students stay organized by automatically synchronizing course content from their institution's Canvas server to a mirrored folder structure on their local machine. It traverses the Canvas folder hierarchy from the course level down to individual items, preserving the same folder structure locally:
+## Table of Contents 📚
+- [Overview](#overview)
+- [Key Features](#key-features-)
+- [Quick Start](#quick-start-)
+- [Installation](#installation-)
+- [Usage](#usage-️)
+- [Configuration](#configuration-⚙️)
+- [Security & Privacy](#security--privacy-🔒)
+- [Development](#development-🛠️)
+- [Links](#links-🔗)
+- [Changelog](#changelog)
 
-![](docs/images/overview.png)
+---
 
-### Key Features
+<h2 align="center">Overview</h2>
 
-- **Automatic Synchronization**: Download and organize all course modules, assignments, and files locally
-- **Preserves Structure**: Creates a local folder hierarchy that matches your Canvas course organization  
-  - Example: `./Canvas/Course Name/Module Name/SubFolder/file.txt`
-- **Flexible Configuration**: Choose what to download:
-  - Modules and module items
-  - Assignments with descriptions and linked files
-  - Canvas Pages (HTML)
-  - External web links and file downloads
-  - Files from the Files section
-- **Smart Linking**: Automatically downloads external files referenced in assignment descriptions
-- **Organized Output**: Categorizes files into logical folders; uncategorized items go to a 'Various Files' folder
+Canvas-Sync mirrors your Canvas course structure locally so you can browse course materials offline. It downloads modules, assignments, pages, files, and optional external resources into a tidy folder layout.
 
-## Requirements
+<h2 align="center">Key Features ⭐</h2>
 
-- **Python 3.10+** (Python 2.7 support has been discontinued)
-- Internet connection to access your Canvas institution
+<p align="center"><img src="docs/images/overview.png" alt="Overview" /></p>
 
-## Installation
+- Automatic synchronization of modules, assignments, and files
+- Preserves course/module/subfolder structure locally
+- Configurable: choose which content types to sync
+- Optional download of external files referenced in descriptions
+- Simple, user-friendly CLI with interactive setup (Typer + Rich)
 
-### Using uv (Recommended)
+<h2 align="center">Quick Start 🚀</h2>
 
-```bash
-uv pip install canvas-sync
-```
+Follow these steps to get up and running quickly.
 
-Or add to your project:
+1) Generate a Canvas API token
 
+- Log in to your Canvas instance → **Account** → **Settings** → **Approved Integrations** → **New Access Token**.
+- Copy the token and keep it secure. You will use it during setup.
+
+<p align="center"><img src="https://raw.githubusercontent.com/Sang-Buster/Canvas-Sync/refs/heads/main/docs/images/auth_token.png" alt="Auth Token" /></p>
+
+2) Install Canvas-Sync (pick one)
+
+Using `uv` (recommended):
 ```bash
 uv add canvas-sync
+uv pip install canvas-sync
 ```
-
-### Using pip
-
+With `pip`:
 ```bash
 pip install canvas-sync
 ```
-
-### From Source
-
-Clone the repository and install in development mode:
-
+From source (developer mode):
 ```bash
 git clone https://github.com/Sang-Buster/Canvas-Sync.git
 cd Canvas-Sync
 pip install -e .
 ```
 
-### Dependencies
+3) Launch and configure
 
-Canvas-Sync automatically installs the following dependencies:
+- Run `canvas` to launch the interactive setup. Choose choose a local sync folder, provide your Canvas domain, the API token from step 1, and select courses to be synced.
+- After setup, run `canvas sync` to begin downloading course content.
 
-- **requests** - HTTP library for API communication
-- **pycryptodome** - Encryption for storing credentials securely
-- **py-bcrypt** - Password hashing for enhanced security
+4) Usage, Configuration, and Common Flags
 
-## Quick Start
+- `canvas --help` — Launch CLI and show help message
+- `canvas setup` — Re-run setup and update saved values
+- `canvas info` — Show current saved settings
+- `canvas sync` — Start synchronization using saved settings
+- `canvas reset` — Reset and remove saved encrypted settings (use when you forgot your password)
 
-### 1. Generate Canvas API Token
+Configuration notes:
+- Settings are stored encrypted locally. Use `canvas --setup` to change them or `canvas reset` to remove them.
 
-To authenticate with Canvas, you'll need an API token:
+<h2 align="center"> Development 🧰</h2>
 
-1. Log in to your Canvas instance
-2. Go to **Account** → **Settings**
-3. Scroll to **Approved Integrations** section
-4. Click **New Access Token**
-5. Give it a memorable name and save
-6. Copy the token (you won't be able to see it again)
-
-![Authentication Token Generation](docs/images/auth_token.png)
-
-### 2. Launch Canvas-Sync
-
-Run the command:
+If you plan to contribute, install in editable mode and run from source:
 
 ```bash
-canvas
-```
-
-On first run, Canvas-Sync will prompt you to:
-- Enter your Canvas instance URL
-- Provide your API token
-- Set a password to encrypt your credentials locally
-- Choose your synchronization preferences
-- Select your local sync folder
-
-### 3. Configure Sync Options
-
-You can customize:
-- Which content types to download (files, pages, external links)
-- Whether to synchronize assignments
-- Whether to attempt downloading external files from assignment descriptions
-- Sync folder location
-
-### Command Line Options
-
-```bash
-canvas                    # Start sync with saved settings
-canvas -s, --setup       # Reinitialize or update settings
-canvas -i, --info        # Display currently saved settings  
-canvas -S, --sync        # Force synchronization
-canvas -h, --help        # Show help message
-canvas -p <password>     # Specify password (use with caution)
-```
-
-## Security & Privacy
-
-- Your Canvas API token is **encrypted locally** using a password you provide
-- Credentials are **never shared** with third parties
-- Canvas-Sync is **read-only** — it only downloads content, never modifies or deletes anything on Canvas
-- Only the official version from GitHub is safe to use; modified versions could potentially misuse your credentials
-
-## Important Notes
-
-- Canvas-Sync is provided as-is; use at your own risk
-- Initial sync may take time depending on course content volume
-- Subsequent runs only download new or updated files for efficiency
-- Some Canvas content may have access restrictions that prevent downloading
-
-## Changelog
-
-### v0.1.0 (May 7, 2026)
-- Initial release with core synchronization features
-- Support for modules, assignments, files, and external links
-- Configurable sync options and secure credential storage
-- Basic error handling and logging
-- Command-line interface for easy use
-- Extensible architecture for future enhancements
-- Documentation and user guide
-- Tested on Python 3.10+
-  
-## Development
-
-### Setting Up Development Environment
-
-```bash
-# Clone the repository
-git clone https://github.com/perslev/Canvas-Sync.git
+git clone https://github.com/Sang-Buster/Canvas-Sync.git
 cd Canvas-Sync
-
-# Install dependencies with uv (recommended)
-uv sync
-
-# Activate the virtual environment
-source .venv/bin/activate
-
-# Run the CLI
-canvas --help
+pip install -e .
+PYTHONPATH=src canvas --help
 ```
 
-### Project Structure
+<h2 align="center">Security & Privacy 🔒</h2>
 
-```
-canvas-sync/
-├── src/canvas_sync/          # Main package
-│   ├── entities/             # Canvas entity classes (Course, Module, Assignment, etc.)
-│   ├── settings/             # Settings and configuration management
-│   ├── utilities/            # Helper functions and API interaction
-│   └── cli.py                # Command-line interface (Typer-based)
-├── pyproject.toml            # Modern Python packaging configuration
-├── README.md                 # This file
-└── docs/
-    ├── ARCHITECTURE.md       # System architecture and design documentation
-    └── images/               # Documentation images
-```
+- Your Canvas API token is encrypted locally using AES and a password-derived key.
+- Canvas-Sync is read-only: it only downloads course content and does not modify Canvas.
+- Do not share your token; if compromised, revoke it in Canvas and run `canvas reset`.
 
-### Architecture & Design
+<h2 align="center">Development 🛠️</h2>
 
-For an in-depth understanding of Canvas-Sync's architecture, class hierarchy, synchronization flow, and how the entity system works, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+- Project layout: `src/canvas_sync/` contains the package. See `docs/ARCHITECTURE.md` for details.
+- Linting/formatting: use `ruff` for checks and formatting.
 
-### Contributing
+<h2 align="center">Links 🔗</h2>
 
-Found a bug or have a feature request? Please open an issue on GitHub:
-https://github.com/Sang-Buster/Canvas-Sync/issues
+- Architecture notes: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- Documentation images: `docs/images` (includes `overview.png` and `auth_token.png`)
+- Releases and changelog: [CHANGELOG.md](CHANGELOG.md)
 
-## Additional Resources
+<h2 align="center">Changelog</h2>
 
-- [Canvas by Instructure](https://www.instructure.com)
-- [Canvas API Documentation](https://canvas.instructure.com/doc/api/index.html)
-- [GitHub Repository](https://github.com/Sang-Buster/Canvas-Sync)
-
-## License
-
-See LICENSE.txt for details
-
----
-
-**Last Updated**: May 2026 | **Version**: 0.2.4
+All releases and detailed change notes are maintained in [CHANGELOG.md](CHANGELOG.md).
