@@ -3,6 +3,11 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.5.0] - 2026-05-07
+### Added
+- Improvements to readme and documentation to reflect the latest features and usage patterns.
+- Added more detailed architecture notes to help new contributors understand the codebase structure and design decisions.
+
 ## [0.4.0] - 2026-05-07
 ### Fixed
 - Progress bar now only shows courses that are actually being synced (skipped courses no longer appear)

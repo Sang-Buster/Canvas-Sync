@@ -4,4 +4,4 @@ Canvas-Sync package version
 Loading by setup.py and imported by __init__.py
 """
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
