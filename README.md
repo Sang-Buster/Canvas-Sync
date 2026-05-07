@@ -35,7 +35,7 @@ Canvas-Sync mirrors your Canvas course structure locally so you can browse cours
 
 <h2 align="center">Key Features ⭐</h2>
 
-<p align="center"><img src="docs/images/overview.png" alt="Overview" /></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Sang-Buster/Canvas-Sync/refs/heads/main/docs/images/overview.png" alt="Overview" /></p>
 
 - Automatic synchronization of modules, assignments, and files
 - Preserves course/module/subfolder structure locally
