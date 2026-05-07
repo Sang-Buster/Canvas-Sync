@@ -76,19 +76,21 @@ Follow these steps to get up and running quickly.
 
 3) Launch and configure
 
-   - Run `canvas` to launch the interactive setup. Choose a local sync folder, provide your Canvas domain, the API token from step 1, and select courses to be synced.
+   - Run `canvas setup` to launch the interactive setup:
+     1. Choose a local sync folder
+     2. Provide your Canvas domain (without `https://` such as `example.instructure.com`)
+     3. Enter the API token from step 1
+     4. Select courses to be synced
    - After setup, run `canvas sync` to begin downloading course content.
 
-4) Usage, Configuration, and Common Flags
+<h2 align="center">Usage ⚙️</h2>
 
-    - `canvas --help` — Launch CLI and show help message
-    - `canvas setup` — Re-run setup and update saved values
-    - `canvas info` — Show current saved settings
-    - `canvas sync` — Start synchronization using saved settings
-    - `canvas reset` — Reset and remove saved encrypted settings (use when you forgot your password)
-
-    Configuration notes:
-    - Settings are stored encrypted locally. Use `canvas --setup` to change them or `canvas reset` to remove them.
+   - `canvas --help` — Launch CLI and show help message
+   - `canvas setup` — Re-run setup and update saved values
+   - `canvas info` — Show current saved settings
+   - `canvas sync` — Start synchronization using saved settings
+   - `canvas reset` — Reset and remove saved encrypted settings (use when you forgot your password)
+   - Settings are stored encrypted locally. Use `canvas setup` to change them or `canvas reset` to remove them.
 
 <h2 align="center">Security & Privacy 🔒</h2>
 
