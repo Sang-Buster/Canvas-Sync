@@ -49,55 +49,45 @@ Follow these steps to get up and running quickly.
 
 1) Generate a Canvas API token
 
-- Log in to your Canvas instance → **Account** → **Settings** → **Approved Integrations** → **New Access Token**.
-- Copy the token and keep it secure. You will use it during setup.
+   - Log in to your Canvas instance → **Account** → **Settings** → **Approved Integrations** → **New Access Token**.
+   - Copy the token and keep it secure. You will use it during setup.
 
-<p align="center"><img src="https://raw.githubusercontent.com/Sang-Buster/Canvas-Sync/refs/heads/main/docs/images/auth_token.png" alt="Auth Token" /></p>
+   <p align="center"><img src="https://raw.githubusercontent.com/Sang-Buster/Canvas-Sync/refs/heads/main/docs/images/auth_token.png" alt="Auth Token" /></p>
 
 2) Install Canvas-Sync (pick one)
 
-Using `uv` (recommended):
-```bash
-uv add canvas-sync
-uv pip install canvas-sync
-```
-With `pip`:
-```bash
-pip install canvas-sync
-```
-From source (developer mode):
-```bash
-git clone https://github.com/Sang-Buster/Canvas-Sync.git
-cd Canvas-Sync
-pip install -e .
-```
+    Using `uv` (recommended):
+    ```bash
+    uv add canvas-sync
+    uv pip install canvas-sync
+    ```
+    With `pip`:
+    ```bash
+    pip install canvas-sync
+    ```
+    From source (developer mode):
+    ```bash
+    git clone https://github.com/Sang-Buster/Canvas-Sync.git
+    cd Canvas-Sync
+    pip install -e .
+    PYTHONPATH=src canvas --help
+    ```
 
 3) Launch and configure
 
-- Run `canvas` to launch the interactive setup. Choose choose a local sync folder, provide your Canvas domain, the API token from step 1, and select courses to be synced.
-- After setup, run `canvas sync` to begin downloading course content.
+   - Run `canvas` to launch the interactive setup. Choose choose a local sync folder, provide your Canvas domain, the API token from step 1, and select courses to be synced.
+   - After setup, run `canvas sync` to begin downloading course content.
 
 4) Usage, Configuration, and Common Flags
 
-- `canvas --help` — Launch CLI and show help message
-- `canvas setup` — Re-run setup and update saved values
-- `canvas info` — Show current saved settings
-- `canvas sync` — Start synchronization using saved settings
-- `canvas reset` — Reset and remove saved encrypted settings (use when you forgot your password)
+    - `canvas --help` — Launch CLI and show help message
+    - `canvas setup` — Re-run setup and update saved values
+    - `canvas info` — Show current saved settings
+    - `canvas sync` — Start synchronization using saved settings
+    - `canvas reset` — Reset and remove saved encrypted settings (use when you forgot your password)
 
-Configuration notes:
-- Settings are stored encrypted locally. Use `canvas --setup` to change them or `canvas reset` to remove them.
-
-<h2 align="center"> Development 🧰</h2>
-
-If you plan to contribute, install in editable mode and run from source:
-
-```bash
-git clone https://github.com/Sang-Buster/Canvas-Sync.git
-cd Canvas-Sync
-pip install -e .
-PYTHONPATH=src canvas --help
-```
+    Configuration notes:
+    - Settings are stored encrypted locally. Use `canvas --setup` to change them or `canvas reset` to remove them.
 
 <h2 align="center">Security & Privacy 🔒</h2>
 
@@ -105,17 +95,7 @@ PYTHONPATH=src canvas --help
 - Canvas-Sync is read-only: it only downloads course content and does not modify Canvas.
 - Do not share your token; if compromised, revoke it in Canvas and run `canvas reset`.
 
-<h2 align="center">Development 🛠️</h2>
-
-- Project layout: `src/canvas_sync/` contains the package. See `docs/ARCHITECTURE.md` for details.
-- Linting/formatting: use `ruff` for checks and formatting.
-
 <h2 align="center">Links 🔗</h2>
 
 - Architecture notes: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- Documentation images: `docs/images` (includes `overview.png` and `auth_token.png`)
 - Releases and changelog: [CHANGELOG.md](CHANGELOG.md)
-
-<h2 align="center">Changelog</h2>
-
-All releases and detailed change notes are maintained in [CHANGELOG.md](CHANGELOG.md).
