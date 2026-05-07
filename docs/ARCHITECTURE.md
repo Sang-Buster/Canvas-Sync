@@ -32,12 +32,12 @@ The most important container objects are:
                                  |
                   --------------------------------
                   |                |              |
-            AssignmentsFolder    Folder      Module
-                  |                |          |    |
-                  |                |          |    |
-              Assignment      (nested)    SubHeader
-                  |            Folders         |
-                  |                |           |
+            AssignmentsFolder    Folder        Module
+                  |                |              |
+                  |                |              |   
+              Assignment      (nested)       SubHeader
+                  |            Folders            |
+                  |                |              |
             ------+------          |      --------+--------
             |            |         |      |       |       |
         LinkedFile    (none)       |    File    Page  ExternalUrl
