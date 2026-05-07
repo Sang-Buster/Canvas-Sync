@@ -15,22 +15,18 @@
 
 ---
 
-## Table of Contents 📚
+<h2 align="center">Table of Contents 📚</h2>
 
-- [Table of Contents 📚](#table-of-contents-)
-- [Overview](#overview)
+- [Overview 📚](#overview-)
 - [Quick Start 🚀](#quick-start-)
-  - [Step 1 — Generate a Canvas API token](#step-1--generate-a-canvas-api-token)
-  - [Step 2 — Install Canvas-Sync](#step-2--install-canvas-sync)
-  - [Step 3 — Launch and configure](#step-3--launch-and-configure)
 - [Installation 📦](#installation-)
 - [Usage ⚙️](#usage-️)
-- [Security \& Privacy 🔒](#security--privacy-)
+- [Security & Privacy 🔒](#security--privacy-)
 - [Links 🔗](#links-)
 
 ---
 
-## Overview
+<h2 align="center">Overview 📚</h2>
 
 Canvas-Sync mirrors your Canvas course structure locally so you can browse course materials offline. It downloads modules, assignments, pages, files, and optional external resources into a tidy folder layout.
 
@@ -44,7 +40,7 @@ Key Features include:
 
 ---
 
-## Quick Start 🚀
+<h2 align="center">Quick Start 🚀</h2>
 
 ### Step 1 — Generate a Canvas API token
 
@@ -70,7 +66,7 @@ After setup, run `canvas sync` to begin downloading course content.
 
 ---
 
-## Installation 📦
+<h2 align="center">Installation 📦</h2>
 
 Pick the method that best fits your workflow:
 
@@ -98,7 +94,7 @@ PYTHONPATH=src canvas --help
 
 ---
 
-## Usage ⚙️
+<h2 align="center">Usage ⚙️</h2>
 
 | Command         | Description                                                                   |
 |-----------------|-------------------------------------------------------------------------------|
@@ -110,7 +106,7 @@ PYTHONPATH=src canvas --help
 
 ---
 
-## Security & Privacy 🔒
+<h2 align="center">Security & Privacy 🔒</h2>
 
 | Features                           | Description                                                                                                                 |
 |------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
@@ -121,7 +117,7 @@ PYTHONPATH=src canvas --help
 
 ---
 
-## Links 🔗
+<h2 align="center">Links 🔗</h2>
 
 - Architecture notes: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - Releases and changelog: [CHANGELOG.md](CHANGELOG.md)
