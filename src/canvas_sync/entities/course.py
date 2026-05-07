@@ -69,18 +69,9 @@ class Course(CanvasEntity):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        status = (
-            "[bold green][SYNCED][/bold green]"
-            if self.to_be_synced
-            else "[bold yellow][SKIPPED][/bold yellow]"
-        )
-        return (
-            status
-            + " " * (7 if self.to_be_synced else 6)
-            + "|   "
-            + "\t" * self.indent
-            + "[bold cyan]Course[/bold cyan]: %s" % self.name
-        )
+        if self.to_be_synced:
+            return f"[bold cyan]▶  {self.name}[/bold cyan]"
+        return f"[dim]▷  {self.name} (skipped)[/dim]"
 
     def download_modules(self):
         """Returns a list of dictionaries representing module objects"""

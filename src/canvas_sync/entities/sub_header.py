@@ -55,14 +55,8 @@ class SubHeader(Module):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        status = "[bold green][SYNCED][/bold green]"
-        return (
-            status
-            + " " * 7
-            + "|   "
-            + "\t" * self.indent
-            + "[blue]Sub header[/blue]: %s" % self.name
-        )
+        prefix = "  " * max(0, self.indent)
+        return f"{prefix}[blue]■[/blue] {self.name}"
 
     def walk(self, counter):
         """

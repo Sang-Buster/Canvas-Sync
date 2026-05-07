@@ -137,6 +137,8 @@ def sync(
         ) as progress:
             task_ids = {}
             for course in synchronizer:
+                if not course.to_be_synced:
+                    continue
                 task_ids[course.get_id()] = progress.add_task(
                     f"[cyan]{course.get_name()}[/cyan]",
                     total=1,

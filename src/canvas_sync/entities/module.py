@@ -61,14 +61,8 @@ class Module(CanvasEntity):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        status = "[bold green][SYNCED][/bold green]"
-        return (
-            status
-            + " " * 7
-            + "|   "
-            + "\t" * self.indent
-            + "[red]Module[/red]: %s" % self.name
-        )
+        prefix = "  " * max(0, self.indent)
+        return f"{prefix}[red]■[/red] [bold]{self.name}[/bold]"
 
     def get_item_information(self):
         """Returns a dictionary of items from the Canvas server"""

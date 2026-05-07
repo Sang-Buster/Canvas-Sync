@@ -58,14 +58,8 @@ class Assignment(CanvasEntity):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        status = "[bold green][SYNCED][/bold green]"
-        return (
-            status
-            + " " * 7
-            + "|   "
-            + "\t" * self.indent
-            + "[yellow]Assignment[/yellow]: %s" % self.name
-        )
+        prefix = "  " * max(0, self.indent)
+        return f"{prefix}[yellow]■[/yellow] {self.name}"
 
     def make_html(self):
         """Create the main HTML description page of the assignment"""

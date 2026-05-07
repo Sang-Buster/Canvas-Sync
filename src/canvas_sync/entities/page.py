@@ -68,12 +68,12 @@ class Page(CanvasEntity):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        return (
-            " " * 15
-            + "|   "
-            + "\t" * self.indent
-            + "[cyan]Page[/cyan]: %s" % self.name
-        )
+        prefix = "  " * max(0, self.indent)
+        return f"{prefix}  [cyan]•[/cyan] {self.name}"
+
+    def _print_leaf(self, icon: str, style: str) -> None:
+        prefix = "  " * max(0, self.indent)
+        console.print(f"{prefix}  [{style}]{icon}[/{style}] {self.name}")
 
     def download_linked_files(self, html_body):
         sub_files = False
@@ -123,12 +123,9 @@ class Page(CanvasEntity):
         self.sync_path = self.sync_path + "/" + tail
 
     def download(self):
-        """Download the page"""
+        """Download the page; returns True if fetched, False if already present."""
         if os.path.exists(self.sync_path + ".html"):
             return False
-
-        # Print download status
-        self.print_status("DOWNLOADING", color="blue")
 
         # Download additional info and HTML body of the Page object if not already supplied
         self.page_info = (
@@ -156,36 +153,21 @@ class Page(CanvasEntity):
 
         return True
 
-    def print_status(self, status, color, overwrite_previous_line=False):
-        """Print status to console"""
-        del overwrite_previous_line
-        style_map = {
-            "blue": "bold blue",
-            "green": "bold green",
-            "red": "bold red",
-            "yellow": "bold yellow",
-        }
-        style = style_map.get(color, "white")
-        console.print(f"[{style}][{status}][/{style}]{str(self)[len(status) + 2 :]}")
-
     def walk(self, counter):
         """Stop walking, endpoint"""
         console.print(str(self))
-
         counter[0] += 1
-        return
 
     def sync(self):
         """
-        Synchronize the page by downloading it from the Canvas server and saving it to the sync path
-        If the page has already been downloaded, skip downloading.
-        Page objects have no children objects and represents an end point of a folder traverse.
+        Synchronize the page by downloading it from the Canvas server and saving it to the
+        sync path. If the page has already been downloaded, skip downloading.
         """
-
         was_downloaded = self.download()
-        self.print_status(
-            "SYNCED", color="green", overwrite_previous_line=was_downloaded
-        )
+        if was_downloaded:
+            self._print_leaf("↓", "bold blue")
+        else:
+            self._print_leaf("✓", "dim green")
 
         for file in self:
             file.update_path()

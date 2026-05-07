@@ -55,70 +55,48 @@ class File(CanvasEntity):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        return (
-            " " * 15
-            + "|   "
-            + "\t" * self.indent
-            + "[yellow]File[/yellow]: %s" % self.name
-        )
+        prefix = "  " * max(0, self.indent)
+        return f"{prefix}  [yellow]•[/yellow] {self.name}"
+
+    def _print_leaf(self, icon: str, style: str) -> None:
+        prefix = "  " * max(0, self.indent)
+        console.print(f"{prefix}  [{style}]{icon}[/{style}] {self.name}")
 
     def download(self):
-        """Download the file"""
+        """Download the file; returns True if fetched, False if already present."""
         if os.path.exists(self.sync_path):
             return False
 
-        self.print_status("DOWNLOADING", color="blue")
-
-        # Download file payload from server
         file_data = self.api.download_file_payload(self.file_info["url"])
 
-        # Write data to file
         try:
             with open(self.sync_path, "wb") as out_file:
                 out_file.write(file_data)
-
         except KeyboardInterrupt as e:
-            # If interrupted mid-writing, delete the corrupted file
             if os.path.exists(self.sync_path):
                 os.remove(self.sync_path)
-
-            # Re-raise, will be catched in Canvas-Sync.py
             raise e
 
         return True
 
-    def print_status(self, status, color, overwrite_previous_line=False):
-        """Print status to console"""
-        del overwrite_previous_line
-        style_map = {
-            "blue": "bold blue",
-            "green": "bold green",
-            "red": "bold red",
-            "yellow": "bold yellow",
-        }
-        status_label = f"[{style_map.get(color, 'white')}][{status}][/{style_map.get(color, 'white')}]"
-        console.print(f"{status_label}{str(self)[len(status) + 2 :]}")
-
     def walk(self, counter):
         """Stop walking, endpoint"""
         console.print(str(self))
-
         counter[0] += 1
-        return
 
     def sync(self):
         """
-        Synchronize the file by downloading it from the Canvas server and saving it to the sync path
-        If the file has already been downloaded, skip downloading.
-        File objects have no children objects and represents an end point of a folder traverse.
+        Synchronize the file by downloading it from the Canvas server and saving it to the
+        sync path. If the file has already been downloaded, skip downloading.
         """
         if not self.locked:
             was_downloaded = self.download()
-            self.print_status(
-                "SYNCED", color="green", overwrite_previous_line=was_downloaded
-            )
+            if was_downloaded:
+                self._print_leaf("↓", "bold blue")
+            else:
+                self._print_leaf("✓", "dim green")
         else:
-            self.print_status("LOCKED", color="red", overwrite_previous_line=False)
+            self._print_leaf("✗", "bold red")
 
     def show(self):
         """Show the folder hierarchy by printing every level"""

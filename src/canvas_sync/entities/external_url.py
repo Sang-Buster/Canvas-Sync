@@ -53,12 +53,12 @@ class ExternalUrl(CanvasEntity):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        return (
-            " " * 15
-            + "|   "
-            + "\t" * self.indent
-            + "[magenta]ExternalUrl[/magenta]: %s" % self.name
-        )
+        prefix = "  " * max(0, self.indent)
+        return f"{prefix}  [magenta]•[/magenta] {self.name}"
+
+    def _print_leaf(self, icon: str, style: str) -> None:
+        prefix = "  " * max(0, self.indent)
+        console.print(f"{prefix}  [{style}]{icon}[/{style}] {self.name}")
 
     def walk(self, counter):
         """Stop walking, endpoint"""
@@ -77,7 +77,7 @@ class ExternalUrl(CanvasEntity):
         # As opposed to the File and Page classes we never write the "DOWNLOAD" status as we already have
         # all information needed to create the URL shortcut at this point. Here we just print the SYNCED status
         # no matter if the shortcut was recreated or not
-        console.print(f"[bold green][SYNCED][/bold green]{str(self)[len('[SYNCED]'):]}")
+        self._print_leaf("⌁", "magenta")
 
     def show(self):
         """Show the folder hierarchy by printing every level"""

@@ -64,52 +64,31 @@ class LinkedFile(CanvasEntity):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        return (
-            " " * 15
-            + "|   "
-            + "\t" * self.indent
-            + "[magenta]Linked File[/magenta]: %s" % self.name
-        )
+        prefix = "  " * max(0, self.indent)
+        return f"{prefix}  [magenta]•[/magenta] {self.name}"
+
+    def _print_leaf(self, icon: str, style: str) -> None:
+        prefix = "  " * max(0, self.indent)
+        console.print(f"{prefix}  [{style}]{icon}[/{style}] {self.name}")
 
     def url_is_valid(self):
         return self.valid_url
 
-    def print_status(self, status, color, overwrite_previous_line=False):
-        """Print status to console"""
-        del overwrite_previous_line
-        style_map = {
-            "blue": "bold blue",
-            "green": "bold green",
-            "red": "bold red",
-            "yellow": "bold yellow",
-        }
-        style = style_map.get(color, "white")
-        console.print(f"[{style}][{status}][/{style}]{str(self)[len(status) + 2 :]}")
-
     def download(self):
         """
-        Download the file, returns True or False depecting if the file was downloaded or not. Returns -1 if the file
-        was attempted downloaded but failed.
+        Download the file; returns True if fetched, False if already present, -1 on failure.
         """
         if os.path.exists(self.sync_path):
             return False
 
-        self.print_status("DOWNLOADING", color="blue")
-
-        # Attempt to download the file
         try:
             response = requests.get(self.download_url)
         except Exception:
-            # Could not download, catch any exception
-            self.print_status("FAILED", "red", overwrite_previous_line=True)
             return -1
 
-        # Check for OK 200 HTTP response
-        if not response.status_code == 200:
-            self.print_status("FAILED", "red", overwrite_previous_line=True)
+        if response.status_code != 200:
             return -1
 
-        # If here, download was successful, write to disk and print status
         with open(self.sync_path, "wb") as out_file:
             out_file.write(response.content)
 
@@ -118,21 +97,17 @@ class LinkedFile(CanvasEntity):
     def walk(self, counter):
         """Stop walking, endpoint"""
         console.print(str(self))
-
         counter[0] += 1
-        return
 
     def sync(self):
-        """
-        Attempt to download a file a the url 'download_url' to the path 'path'/filename while printing
-        the status using an indent of print_indent to align with the parent object
-        """
-        was_downloaded = self.download()
-
-        if was_downloaded != -1:
-            self.print_status(
-                "SYNCED", color="green", overwrite_previous_line=was_downloaded
-            )
+        """Attempt to download a linked file from the web and save it locally."""
+        result = self.download()
+        if result is True:
+            self._print_leaf("↓", "bold blue")
+        elif result is False:
+            self._print_leaf("✓", "dim green")
+        else:
+            self._print_leaf("✗", "bold red")
 
     def show(self):
         """Show the folder hierarchy by printing every level"""

@@ -64,7 +64,7 @@ class Synchronizer(CanvasEntity):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        return "\n[*] Synchronizing to folder: %s\n" % self.sync_path
+        return f"\n[bold]Syncing to:[/bold] [cyan]{self.sync_path}[/cyan]"
 
     def get_entities(self, course_id):
         """Getter method for the list of Entities"""
