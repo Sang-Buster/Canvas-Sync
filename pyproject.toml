@@ -1,0 +1,64 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "canvas-sync"
+version = "0.1.0"
+description = "Synchronize modules, assignments and files from Canvas by Instructure to your local computer"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Sang-Buster", email = "hello@singsongaftermath.com" }]
+keywords = [
+    "canvas",
+    "synchronize",
+    "instructure",
+    "lms",
+    "education",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Education",
+    "Topic :: Internet :: File Transfer Protocol (FTP)",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "requests>=2.25.0",
+    "pycryptodome>=3.10.0",
+    "bcrypt>=4.0.0",
+    "typer[all]>=0.9.0",
+    "rich>=13.0.0",
+    "questionary>=1.10.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Sang-Buster/Canvas-Sync"
+Repository = "https://github.com/Sang-Buster/Canvas-Sync.git"
+Documentation = "https://github.com/Sang-Buster/Canvas-Sync"
+"Bug Tracker" = "https://github.com/Sang-Buster/Canvas-Sync/issues"
+
+[project.scripts]
+canvas = "canvas_sync.cli:entry"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/canvas_sync"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/README.md",
+    "/LICENSE.txt",
+    "/CHANGELOG.md",
+]
