@@ -58,10 +58,22 @@ def _render_settings(settings: Settings) -> None:
         ", ".join([k for k, enabled in settings.modules_settings.items() if enabled])
         or "None",
     )
-    table.add_row("Sync assignments", "[green]True[/green]" if settings.sync_assignments else "[red]False[/red]")
-    table.add_row("Download linked files", "[green]True[/green]" if settings.download_linked else "[red]False[/red]")
-    table.add_row("Avoid duplicates", "[green]True[/green]" if settings.avoid_duplicates else "[red]False[/red]")
-    table.add_row("Use nicknames", "[green]True[/green]" if settings.use_nicknames else "[red]False[/red]")
+    table.add_row(
+        "Sync assignments",
+        "[green]True[/green]" if settings.sync_assignments else "[red]False[/red]",
+    )
+    table.add_row(
+        "Download linked files",
+        "[green]True[/green]" if settings.download_linked else "[red]False[/red]",
+    )
+    table.add_row(
+        "Avoid duplicates",
+        "[green]True[/green]" if settings.avoid_duplicates else "[red]False[/red]",
+    )
+    table.add_row(
+        "Use nicknames",
+        "[green]True[/green]" if settings.use_nicknames else "[red]False[/red]",
+    )
     console.print(table)
 
 

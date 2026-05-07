@@ -126,13 +126,17 @@ class Synchronizer(CanvasEntity):
         for course in self:
             task_id = tasks.get(course.get_id()) if tasks else None
             if progress and task_id is not None:
-                progress.update(task_id, description=f"[cyan]{course.get_name()}[/cyan] (syncing)")
+                progress.update(
+                    task_id, description=f"[cyan]{course.get_name()}[/cyan] (syncing)"
+                )
 
             course.sync(progress=progress, task_id=task_id)
 
             if progress and task_id is not None:
                 progress.advance(task_id, 1)
-                progress.update(task_id, description=f"[green]{course.get_name()}[/green] (done)")
+                progress.update(
+                    task_id, description=f"[green]{course.get_name()}[/green] (done)"
+                )
 
     def show(self):
         """Show the folder hierarchy by printing every level"""

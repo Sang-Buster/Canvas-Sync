@@ -162,7 +162,9 @@ class Settings(object):
         try:
             self._set_settings()
         except KeyboardInterrupt:
-            console.print("[bold red][*] Setup interrupted, nothing was saved.[/bold red]")
+            console.print(
+                "[bold red][*] Setup interrupted, nothing was saved.[/bold red]"
+            )
             sys.exit()
 
         self.write_settings()
@@ -250,7 +252,9 @@ class Settings(object):
         ]
         table.add_row(
             "Sync module items",
-            ", ".join(enabled_module_items) if enabled_module_items else "[red]None[/red]",
+            ", ".join(enabled_module_items)
+            if enabled_module_items
+            else "[red]None[/red]",
         )
         table.add_row(
             "Sync assignments",

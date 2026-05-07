@@ -214,11 +214,7 @@ def ask_for_courses(settings, api):
 
             console.print("[bold cyan]Sync this item\tNumber\tCourse Title[/bold cyan]")
             for index, course in enumerate(labels):
-                toggle = (
-                    "[green]True[/green]"
-                    if choices[index]
-                    else "[red]False[/red]"
-                )
+                toggle = "[green]True[/green]" if choices[index] else "[red]False[/red]"
                 console.print(f"{toggle}\t\t[{index + 1}]\t{labels[index]}")
             console.print(
                 "\n\t\t[0]\t[bold cyan]Confirm selection (at least one course required)[/bold cyan]"
