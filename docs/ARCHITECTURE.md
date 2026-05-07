@@ -58,12 +58,21 @@ The `SubHeader` class inherits from `Module` rather than directly from `CanvasEn
 ## Synchronization Flow
 
 1. **Synchronizer** initializes with a `Settings` object and a list of `Course` objects.
-2. **Synchronizer.sync()** calls `sync()` on each course (using parallel `ThreadPoolExecutor` for concurrent syncing).
+2. **Synchronizer.sync()** calls `sync()` on each course and updates per-course progress in the CLI when progress tracking is enabled.
 3. **Course.sync()** propagates the sync call to all child entities (modules, assignments, files folders).
 4. **Module/SubHeader.sync()** adds child items (Files, Pages, ExternalURLs) and syncs each.
 5. **Assignment.sync()** downloads the assignment description as HTML and syncs linked files.
 6. **Folder.sync()** recursively syncs the file hierarchy from Canvas.
 7. Leaf nodes (`File`, `LinkedFile`, `Page`, `ExternalUrl`) download their content to disk.
+
+## CLI and Rendering Layer
+
+Canvas-Sync uses a Typer command layer with Rich-based rendering:
+
+- Shared Rich `Console` instance in `utilities/console.py`
+- Structured command output from `cli.py` (panel header, info tables, status messages)
+- Per-course progress visualization during `canvas sync`
+- Rich-styled entity status lines replacing legacy ANSI formatting for the sync tree
 
 ## Key Classes
 
@@ -149,13 +158,10 @@ Settings are encrypted with AES-256 and stored in:
 - `~/.Canvas-Sync.pw` (bcrypt hashed password)
 - `.env` (base64-encoded encrypted blob, for convenience)
 
-## Parallel Synchronization
+## Synchronization Strategy
 
-Canvas-Sync uses `concurrent.futures.ThreadPoolExecutor` with up to 4 worker threads to:
-
-- Download multiple courses concurrently
-- Improve overall sync performance on systems with sufficient I/O bandwidth
-- Fall back to sequential sync if concurrent execution fails
+Canvas-Sync currently synchronizes courses in sequence, while presenting per-course progress in the CLI.
+This keeps behavior deterministic and simplifies troubleshooting while still giving clear runtime feedback.
 
 ## Error Handling
 

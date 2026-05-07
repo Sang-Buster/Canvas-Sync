@@ -25,7 +25,7 @@ The Synchronizer encapsulates a list of children Course objects.
 from canvas_sync.entities.canvas_entity import CanvasEntity
 from canvas_sync.entities.course import Course
 from canvas_sync.utilities import helpers
-from canvas_sync.utilities.ANSI import ANSI
+from canvas_sync.utilities.console import console
 
 
 class Synchronizer(CanvasEntity):
@@ -40,9 +40,6 @@ class Synchronizer(CanvasEntity):
 
         if not settings.is_loaded():
             settings.load_settings("")
-
-        # Start sync by clearing the console window
-        helpers.clear_console()
 
         # Get the corrected top-level sync path
         sync_path = helpers.get_corrected_path(
@@ -104,11 +101,9 @@ class Synchronizer(CanvasEntity):
         """Walk by adding all Courses to the list of children"""
 
         # Print initial walk message
-        print(self)
-        print(
-            ANSI.format(
-                "\n[*] Mapping out the Canvas folder hierarchy. Please wait...", "red"
-            )
+        console.print(self)
+        console.print(
+            "[bold red][*] Mapping out the Canvas folder hierarchy. Please wait...[/bold red]"
         )
         self.add_courses()
 
@@ -118,23 +113,33 @@ class Synchronizer(CanvasEntity):
 
         return counter
 
-    def sync(self):
+    def sync(self, progress=None, tasks=None):
         """
         1) Adding all Courses objects to the list of children
         2) Synchronize all children objects
         """
-        print(str(self))
+        console.print(str(self))
 
-        self.add_courses()
+        if len(self.children) == 0:
+            self.add_courses()
+
         for course in self:
-            course.sync()
+            task_id = tasks.get(course.get_id()) if tasks else None
+            if progress and task_id is not None:
+                progress.update(task_id, description=f"[cyan]{course.get_name()}[/cyan] (syncing)")
+
+            course.sync(progress=progress, task_id=task_id)
+
+            if progress and task_id is not None:
+                progress.advance(task_id, 1)
+                progress.update(task_id, description=f"[green]{course.get_name()}[/green] (done)")
 
     def show(self):
         """Show the folder hierarchy by printing every level"""
 
         helpers.clear_console()
-        print("\n")
-        print(str(self))
+        console.print("\n")
+        console.print(str(self))
 
         for course in self:
             course.show()

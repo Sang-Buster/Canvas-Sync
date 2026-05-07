@@ -27,7 +27,7 @@ from canvas_sync.entities.canvas_entity import CanvasEntity
 from canvas_sync.entities.folder import Folder
 from canvas_sync.entities.module import Module
 from canvas_sync.utilities import helpers
-from canvas_sync.utilities.ANSI import ANSI
+from canvas_sync.utilities.console import console
 
 
 class Course(CanvasEntity):
@@ -69,16 +69,17 @@ class Course(CanvasEntity):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        status = ANSI.format(
-            "[SYNCED]" if self.to_be_synced else "[SKIPPED]",
-            formatting="green" if self.to_be_synced else "yellow",
+        status = (
+            "[bold green][SYNCED][/bold green]"
+            if self.to_be_synced
+            else "[bold yellow][SKIPPED][/bold yellow]"
         )
         return (
             status
             + " " * (7 if self.to_be_synced else 6)
             + "|   "
             + "\t" * self.indent
-            + "%s: %s" % (ANSI.format("Course", formatting="course"), self.name)
+            + "[bold cyan]Course[/bold cyan]: %s" % self.name
         )
 
     def download_modules(self):
@@ -137,7 +138,7 @@ class Course(CanvasEntity):
         if not list(self.settings.modules_settings.values()) == [False, False, False]:
             self.add_modules()
 
-        print(str(self))
+        console.print(str(self))
 
         # Add an AssignmentsFolder if at least one assignment is found under the course
         self.add_assignments_folder()
@@ -149,12 +150,12 @@ class Course(CanvasEntity):
         for child in self:
             child.walk(counter)
 
-    def sync(self):
+    def sync(self, progress=None, task_id=None):
         """
         1) Adding all Modules and AssignmentFolder objects to the list of children
         2) Synchronize all children objects
         """
-        print(str(self))
+        console.print(str(self))
 
         if not self.to_be_synced:
             return
@@ -170,11 +171,16 @@ class Course(CanvasEntity):
         self.add_files_folder()
 
         for child in self:
+            if progress and task_id is not None:
+                progress.update(
+                    task_id,
+                    description=f"[cyan]{self.name}[/cyan] ({child.get_identifier_string()})",
+                )
             child.sync()
 
     def show(self):
         """Show the folder hierarchy by printing every level"""
-        print(str(self))
+        console.print(str(self))
 
         for child in self:
             child.show()

@@ -22,7 +22,7 @@ See developer_info.txt file for more information on the class hierarchy of Canva
 
 # Canvas-Sync modules
 from canvas_sync.entities.module import Module
-from canvas_sync.utilities.ANSI import ANSI
+from canvas_sync.utilities.console import console
 
 
 class SubHeader(Module):
@@ -55,13 +55,13 @@ class SubHeader(Module):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        status = ANSI.format("[SYNCED]", formatting="green")
+        status = "[bold green][SYNCED][/bold green]"
         return (
             status
             + " " * 7
             + "|   "
             + "\t" * self.indent
-            + "%s: %s" % (ANSI.format("Sub header", formatting="subheader"), self.name)
+            + "[blue]Sub header[/blue]: %s" % self.name
         )
 
     def walk(self, counter):
@@ -70,7 +70,7 @@ class SubHeader(Module):
         SubFolder is instantiated with a list of dictionaries of item information and will supply this to the add_items
         method. add_items will then not download the items from the server.
         """
-        print(str(self))
+        console.print(str(self))
 
         self.add_items(items=self.items)
 
@@ -86,7 +86,7 @@ class SubHeader(Module):
         SubFolder is instantiated with a list of dictionaries of item information and will supply this to the add_items
         method. add_items will then not download the items from the server.
         """
-        print(str(self))
+        console.print(str(self))
 
         self.add_items(items=self.items)
 

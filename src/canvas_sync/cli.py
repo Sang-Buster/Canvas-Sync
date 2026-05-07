@@ -11,16 +11,25 @@ from typing import Optional
 
 import typer
 from rich import box
-from rich.console import Console
 from rich.panel import Panel
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    SpinnerColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
+from rich.rule import Rule
+from rich.table import Table
 
 from canvas_sync.entities.synchronizer import Synchronizer
 from canvas_sync.settings import user_prompter
 from canvas_sync.settings.settings import Settings
 from canvas_sync.utilities import helpers
+from canvas_sync.utilities.console import console
 from canvas_sync.utilities.instructure_api import InstructureApi
 
-console = Console()
 app = typer.Typer(help="Canvas-Sync — synchronize Canvas content locally")
 
 
@@ -33,6 +42,27 @@ def _print_header() -> None:
             box=box.ROUNDED,
         )
     )
+    console.print(Rule(style="cyan"))
+
+
+def _render_settings(settings: Settings) -> None:
+    table = Table(title="Current Settings", box=box.SIMPLE_HEAVY)
+    table.add_column("Setting", style="bold cyan")
+    table.add_column("Value", style="white")
+    table.add_row("Sync path", settings.sync_path)
+    table.add_row("Canvas domain", settings.domain)
+    table.add_row("Authentication token", settings.token)
+    table.add_row("Courses to sync", ", ".join(settings.courses_to_sync))
+    table.add_row(
+        "Module items",
+        ", ".join([k for k, enabled in settings.modules_settings.items() if enabled])
+        or "None",
+    )
+    table.add_row("Sync assignments", "[green]True[/green]" if settings.sync_assignments else "[red]False[/red]")
+    table.add_row("Download linked files", "[green]True[/green]" if settings.download_linked else "[red]False[/red]")
+    table.add_row("Avoid duplicates", "[green]True[/green]" if settings.avoid_duplicates else "[red]False[/red]")
+    table.add_row("Use nicknames", "[green]True[/green]" if settings.use_nicknames else "[red]False[/red]")
+    console.print(table)
 
 
 @app.command()
@@ -52,7 +82,10 @@ def info() -> None:
     """Show current settings."""
     _print_header()
     settings = Settings()
-    settings.show(quit=False)
+    valid = settings.load_settings("")
+    _render_settings(settings)
+    if not valid:
+        settings.print_auth_token_reset_error()
 
 
 @app.command()
@@ -93,7 +126,22 @@ def sync(
     synchronizer = Synchronizer(settings=settings, api=api)
 
     try:
-        synchronizer.sync()
+        synchronizer.add_courses()
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("{task.description}"),
+            BarColumn(),
+            MofNCompleteColumn(),
+            TimeElapsedColumn(),
+            console=console,
+        ) as progress:
+            task_ids = {}
+            for course in synchronizer:
+                task_ids[course.get_id()] = progress.add_task(
+                    f"[cyan]{course.get_name()}[/cyan]",
+                    total=1,
+                )
+            synchronizer.sync(progress=progress, tasks=task_ids)
         console.print(Panel(":sparkles: [green]Sync complete![/green]", expand=False))
     except KeyboardInterrupt:
         console.print(":warning: [yellow]Sync interrupted by user.[/yellow]")
@@ -161,7 +209,8 @@ def version() -> None:
     """Show package version."""
     from canvas_sync import _version
 
-    console.print(f"Canvas-Sync version: [bold]{_version.__version__}[/bold]")
+    console.print(Rule("Canvas-Sync Version", style="cyan"))
+    console.print(f"[bold]{_version.__version__}[/bold]")
 
 
 def entry() -> None:

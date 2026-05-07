@@ -29,7 +29,7 @@ from canvas_sync.entities.file import File
 from canvas_sync.entities.linked_file import LinkedFile
 from canvas_sync.entities.page import Page
 from canvas_sync.utilities import helpers
-from canvas_sync.utilities.ANSI import ANSI
+from canvas_sync.utilities.console import console
 
 
 class Assignment(CanvasEntity):
@@ -58,13 +58,13 @@ class Assignment(CanvasEntity):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        status = ANSI.format("[SYNCED]", formatting="green")
+        status = "[bold green][SYNCED][/bold green]"
         return (
             status
             + " " * 7
             + "|   "
             + "\t" * self.indent
-            + "%s: %s" % (ANSI.format("Assignment", formatting="assignment"), self.name)
+            + "[yellow]Assignment[/yellow]: %s" % self.name
         )
 
     def make_html(self):
@@ -142,7 +142,7 @@ class Assignment(CanvasEntity):
 
     def walk(self, counter):
         """Walk by adding all File objects to the list of children"""
-        print(str(self))
+        console.print(str(self))
         self.add_files()
 
         counter[0] += 1
@@ -154,7 +154,7 @@ class Assignment(CanvasEntity):
         1) Adding all File and LinkedFile objects to the list of children
         2) Synchronize all children objects
         """
-        print(str(self))
+        console.print(str(self))
 
         self.add_files()
         self.make_html()
@@ -164,7 +164,7 @@ class Assignment(CanvasEntity):
 
     def show(self):
         """Show the folder hierarchy by printing every level"""
-        print(str(self))
+        console.print(str(self))
 
         for file in self:
             file.show()

@@ -27,7 +27,7 @@ from canvas_sync.entities.external_url import ExternalUrl
 from canvas_sync.entities.file import File
 from canvas_sync.entities.page import Page
 from canvas_sync.utilities import helpers
-from canvas_sync.utilities.ANSI import ANSI
+from canvas_sync.utilities.console import console
 
 
 class Module(CanvasEntity):
@@ -61,13 +61,13 @@ class Module(CanvasEntity):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        status = ANSI.format("[SYNCED]", formatting="green")
+        status = "[bold green][SYNCED][/bold green]"
         return (
             status
             + " " * 7
             + "|   "
             + "\t" * self.indent
-            + "%s: %s" % (ANSI.format("Module", formatting="module"), self.name)
+            + "[red]Module[/red]: %s" % self.name
         )
 
     def get_item_information(self):
@@ -162,7 +162,7 @@ class Module(CanvasEntity):
         Walk by adding all File, Page, ExternalLink and SubFolder objects to the list of children
         Overwritten in derived SubFolder class
         """
-        print(str(self))
+        console.print(str(self))
 
         self.add_items()
 
@@ -175,7 +175,7 @@ class Module(CanvasEntity):
         1) Adding all File, Page, ExternalLink and SubFolder objects to the list of children
         2) Synchronize all children objects
         """
-        print(str(self))
+        console.print(str(self))
 
         self.add_items()
 
@@ -184,7 +184,7 @@ class Module(CanvasEntity):
 
     def show(self):
         """Show the folder hierarchy by printing every level"""
-        print(str(self))
+        console.print(str(self))
 
         for child in self:
             child.show()

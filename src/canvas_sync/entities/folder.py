@@ -25,7 +25,7 @@ import os
 from canvas_sync.entities.canvas_entity import CanvasEntity
 from canvas_sync.entities.file import File
 from canvas_sync.utilities import helpers
-from canvas_sync.utilities.ANSI import ANSI
+from canvas_sync.utilities.console import console
 
 
 class Folder(CanvasEntity):
@@ -58,13 +58,13 @@ class Folder(CanvasEntity):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        status = ANSI.format("[SYNCED]", formatting="green")
+        status = "[bold green][SYNCED][/bold green]"
         return (
             status
             + " " * 7
             + "|   "
             + "\t" * self.indent
-            + "%s: %s" % (ANSI.format("Folder", formatting="folder"), self.name)
+            + "[green]Folder[/green]: %s" % self.name
         )
 
     def initialize_black_list(self):
@@ -112,7 +112,7 @@ class Folder(CanvasEntity):
         """
         Walk by adding all Files and Folder objects to the list of children
         """
-        print(str(self))
+        console.print(str(self))
 
         # If avoid duplicated setting is active, initialize black list of files found in Modules and
         # Assignments if it was not passed to the object at initialization.
@@ -133,7 +133,7 @@ class Folder(CanvasEntity):
         1) Adding all Files and Folder objects to the list of children
         2) Synchronize all children objects
         """
-        print(str(self))
+        console.print(str(self))
 
         # If avoid duplicated setting is active, initialize black list of files found in Modules and
         # Assignments if it was not passed to the object at initialization.

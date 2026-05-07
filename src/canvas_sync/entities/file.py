@@ -18,11 +18,10 @@ See developer_info.txt file for more information on the class hierarchy of Canva
 
 # Inbuilt modules
 import os
-import sys
 
 from canvas_sync.entities.canvas_entity import CanvasEntity
 from canvas_sync.utilities import helpers
-from canvas_sync.utilities.ANSI import ANSI
+from canvas_sync.utilities.console import console
 
 
 class File(CanvasEntity):
@@ -60,7 +59,7 @@ class File(CanvasEntity):
             " " * 15
             + "|   "
             + "\t" * self.indent
-            + "%s: %s" % (ANSI.format("File", formatting="file"), self.name)
+            + "[yellow]File[/yellow]: %s" % self.name
         )
 
     def download(self):
@@ -90,21 +89,19 @@ class File(CanvasEntity):
 
     def print_status(self, status, color, overwrite_previous_line=False):
         """Print status to console"""
-
-        if overwrite_previous_line:
-            # Move up one line
-            sys.stdout.write(ANSI.format("", formatting="lineup"))
-            sys.stdout.flush()
-
-        print(
-            ANSI.format("[%s]" % status, formatting=color)
-            + str(self)[len(status) + 2 :]
-        )
-        sys.stdout.flush()
+        del overwrite_previous_line
+        style_map = {
+            "blue": "bold blue",
+            "green": "bold green",
+            "red": "bold red",
+            "yellow": "bold yellow",
+        }
+        status_label = f"[{style_map.get(color, 'white')}][{status}][/{style_map.get(color, 'white')}]"
+        console.print(f"{status_label}{str(self)[len(status) + 2 :]}")
 
     def walk(self, counter):
         """Stop walking, endpoint"""
-        print(str(self))
+        console.print(str(self))
 
         counter[0] += 1
         return
@@ -125,4 +122,4 @@ class File(CanvasEntity):
 
     def show(self):
         """Show the folder hierarchy by printing every level"""
-        print(str(self))
+        console.print(str(self))

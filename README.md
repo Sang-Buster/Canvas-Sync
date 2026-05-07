@@ -42,6 +42,7 @@ Canvas-Sync mirrors your Canvas course structure locally so you can browse cours
 - Configurable: choose which content types to sync
 - Optional download of external files referenced in descriptions
 - Simple, user-friendly CLI with interactive setup (Typer + Rich)
+- Rich progress bars and improved sync status output
 
 <h2 align="center">Quick Start 🚀</h2>
 
@@ -75,7 +76,7 @@ Follow these steps to get up and running quickly.
 
 3) Launch and configure
 
-   - Run `canvas` to launch the interactive setup. Choose choose a local sync folder, provide your Canvas domain, the API token from step 1, and select courses to be synced.
+   - Run `canvas` to launch the interactive setup. Choose a local sync folder, provide your Canvas domain, the API token from step 1, and select courses to be synced.
    - After setup, run `canvas sync` to begin downloading course content.
 
 4) Usage, Configuration, and Common Flags

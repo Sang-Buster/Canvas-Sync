@@ -18,6 +18,8 @@ A collection of functions used to prompt the user for settings.
 import glob
 import os
 
+from rich.prompt import Confirm, IntPrompt, Prompt
+
 # Check for UNIX or Windows platform
 try:
     import readline
@@ -38,7 +40,7 @@ except Exception:
 
 # Canvas-Sync module import
 from canvas_sync.utilities import helpers
-from canvas_sync.utilities.ANSI import ANSI
+from canvas_sync.utilities.console import console
 
 
 def _ask_questionary(prompt):
@@ -53,79 +55,35 @@ def show_main_screen(settings_file_exists):
     Prompt the user for initial choice of action. Does not allow Synchronization before settings file has been set
     """
 
-    # Use questionary select if available for nicer UI
-    if HAS_QUESTIONARY:
-        choices = [
-            "Quit",
-            "Synchronize my Canvas",
-            "Set new settings",
-            "Show current settings",
-            "Show help",
-        ]
-        answer = _ask_questionary(
-            questionary.select("What would you like to do?", choices=choices)
+    choices = {
+        0: "quit",
+        1: "sync",
+        2: "set_settings",
+        3: "show_settings",
+        4: "show_help",
+    }
+
+    while True:
+        helpers.clear_console()
+        import canvas_sync
+
+        console.print(f"[bold cyan]Canvas-Sync, {canvas_sync.__version__}[/bold cyan]")
+        console.print(
+            "Automatically synchronize modules, assignments and files located on a Canvas web server."
         )
-        mapping = {
-            "Quit": "quit",
-            "Synchronize my Canvas": "sync",
-            "Set new settings": "set_settings",
-            "Show current settings": "show_settings",
-            "Show help": "show_help",
-        }
-        # If user selected sync but no settings exist, force setup
-        choice = mapping.get(answer, "quit")
-        if choice == "sync" and not settings_file_exists:
+        console.print("[bold]What would you like to do?[/bold]")
+        console.print("1) Synchronize my Canvas")
+        console.print("2) Set new settings")
+        console.print("3) Show current settings")
+        console.print("4) Show help")
+        console.print("0) Quit")
+
+        choice = IntPrompt.ask("Choose number", default=0)
+        if choice not in choices:
+            continue
+        if choice == 1 and not settings_file_exists:
             return "set_settings"
-        return choice
-    else:
-        choice = -1
-        to_do = "quit"
-        while choice not in (0, 1, 2, 3, 4):
-            helpers.clear_console()
-
-            # Load version string
-            import canvas_sync
-
-            version = canvas_sync.__version__
-
-            title = "Canvas-Sync, "
-            pretty_string = "-" * (len(title) + len(version))
-
-            print(
-                ANSI.format(
-                    "%s\n%s%s\n%s" % (pretty_string, title, version, pretty_string),
-                    "file",
-                )
-            )
-
-            print(
-                ANSI.format(
-                    "Automatically synchronize modules, assignments & files located on a Canvas web server.",
-                    "announcer",
-                )
-            )
-            print(ANSI.format("\nWhat would you like to do?", "underline"))
-            print("\n\t1) " + ANSI.format("Synchronize my Canvas", "blue"))
-            print("\t2) " + ANSI.format("Set new settings", "white"))
-            print("\t3) " + ANSI.format("Show current settings", "white"))
-            print("\t4) " + ANSI.format("Show help", "white"))
-            print("\n\t0) " + ANSI.format("Quit", "yellow"))
-
-            try:
-                choice = int(input("\nChoose number: "))
-                if choice < 0 or choice > 4:
-                    continue
-            except ValueError:
-                continue
-
-            if choice == 1 and not settings_file_exists:
-                to_do = "set_settings"
-            else:
-                to_do = ["quit", "sync", "set_settings", "show_settings", "show_help"][
-                    choice
-                ]
-
-        return to_do
+        return choices[choice]
 
 
 def ask_for_sync_path():
@@ -153,16 +111,9 @@ def ask_for_sync_path():
     found = False
     # Keep asking until a valid path has been entered by the user
     while not found:
-        if HAS_QUESTIONARY:
-            sync_path = _ask_questionary(
-                questionary.text(
-                    "Enter a relative or absolute path to sync to (~/Desktop/Canvas etc.):"
-                )
-            )
-        else:
-            sync_path = input(
-                "\nEnter a relative or absolute path to sync to (~/Desktop/Canvas etc.):\n$ "
-            )
+        sync_path = Prompt.ask(
+            "Enter a relative or absolute path to sync to (~/Desktop/Canvas etc.)"
+        )
 
         # Expand tilde if present in the sync_path
         if "~" in sync_path:
@@ -170,8 +121,9 @@ def ask_for_sync_path():
         sync_path = os.path.abspath(sync_path)
 
         if not os.path.exists(os.path.split(sync_path)[0]):
-            print(
-                "\n[ERROR] Base path '%s' does not exist." % os.path.split(sync_path)[0]
+            console.print(
+                "[bold red][ERROR][/bold red] Base path "
+                f"'{os.path.split(sync_path)[0]}' does not exist."
             )
         else:
             found = True
@@ -197,17 +149,10 @@ def ask_for_domain():
 
     # Keep asking until a valid domain has been entered by the user
     while not found:
-        if HAS_QUESTIONARY:
-            dom = _ask_questionary(
-                questionary.text(
-                    "Enter the Canvas domain of your institution (without https://)"
-                )
-            )
-            domain = "https://" + (dom or "")
-        else:
-            domain = "https://" + input(
-                "\nEnter the Canvas domain of your institution:\n$ https://"
-            )
+        dom = Prompt.ask(
+            "Enter the Canvas domain of your institution (without https://)"
+        )
+        domain = "https://" + (dom or "")
         found = helpers.validate_domain(domain)
 
     return domain
@@ -225,14 +170,7 @@ def ask_for_token(domain):
 
     # Keep asking until a valid authentication token has been entered by the user
     while not found:
-        if HAS_QUESTIONARY:
-            token = _ask_questionary(
-                questionary.text("Enter authentication token (see README for details):")
-            )
-        else:
-            token = input(
-                "\nEnter authentication token (see 'Setup' section on https://github.com/Sang-Buster/Canvas-Sync for details):\n$ "
-            )
+        token = Prompt.ask("Enter authentication token (see README for details)")
         found = helpers.validate_token(domain, token)
 
     return token
@@ -270,42 +208,26 @@ def ask_for_courses(settings, api):
         choice = -1
         while choice != 0:
             settings.print_settings(clear=True)
-            print(
-                ANSI.format(
-                    "\n\nPlease choose which courses you would like Canvas-Sync to sync for you:\n",
-                    "white",
-                )
+            console.print(
+                "\nPlease choose which courses you would like Canvas-Sync to sync:\n"
             )
 
-            print(ANSI.format("Sync this item\tNumber\tCourse Title", "blue"))
+            console.print("[bold cyan]Sync this item\tNumber\tCourse Title[/bold cyan]")
             for index, course in enumerate(labels):
-                print(
-                    "%s\t\t[%s]\t%s"
-                    % (
-                        ANSI.format(
-                            str(choices[index]), "green" if choices[index] else "red"
-                        ),
-                        index + 1,
-                        labels[index],
-                    )
+                toggle = (
+                    "[green]True[/green]"
+                    if choices[index]
+                    else "[red]False[/red]"
                 )
-            print(
-                "\n\n\t\t[%s]\t%s"
-                % (
-                    0,
-                    ANSI.format(
-                        "Confirm selection (at least one course required)", "blue"
-                    ),
-                )
+                console.print(f"{toggle}\t\t[{index + 1}]\t{labels[index]}")
+            console.print(
+                "\n\t\t[0]\t[bold cyan]Confirm selection (at least one course required)[/bold cyan]"
             )
-            print("\t\t[%s]\t%s" % (-1, ANSI.format("Select all", "green")))
-            print("\t\t[%s]\t%s" % (-2, ANSI.format("Deselect all", "red")))
+            console.print("\t\t[-1]\t[green]Select all[/green]")
+            console.print("\t\t[-2]\t[red]Deselect all[/red]")
 
-            try:
-                choice = int(input("\nChoose number: "))
-                if choice < -2 or choice > len(labels):
-                    continue
-            except ValueError:
+            choice = IntPrompt.ask("Choose number", default=0)
+            if choice < -2 or choice > len(labels):
                 continue
 
             if choice == 0:
@@ -325,70 +247,46 @@ def ask_for_courses(settings, api):
 
 
 def ask_for_advanced_settings(settings):
-    choice = -1
-    while choice not in (1, 2):
+    while True:
         settings.print_settings(clear=True)
 
-        print(
-            ANSI.format(
-                "\n\nAll mandatory settings are set. Do you wish see advanced settings?",
-                "announcer",
-            )
+        console.print(
+            "\nAll mandatory settings are set. Do you want to see advanced settings?"
         )
+        console.print("[1] Show advanced settings (recommended)")
+        console.print("[2] Use default settings")
 
-        print(ANSI.format("\n[1]\tShow advanced settings (recommended)", "bold"))
-        print(ANSI.format("[2]\tUse default settings", "bold"))
-
-        try:
-            choice = int(input("\nChoose number: "))
-        except ValueError:
-            continue
-
+        choice = IntPrompt.ask("Choose number", default=1)
         if choice == 1:
             return True
-        elif choice == 2:
+        if choice == 2:
             return False
-        else:
-            continue
 
 
 def ask_for_module_settings(module_settings, settings):
     choice = -1
     while choice != 0:
         settings.print_advanced_settings(clear=True)
-        print(ANSI.format("\n\nModule settings", "announcer"))
-        print(
-            ANSI.format(
-                "In Canvas, 'Modules' may contain various items such as files, HTML pages of\n"
-                "exercises or reading material as well as links to external web-pages.\n\n"
-                "Below you may specify, if you would like Canvas-Sync to avoid syncing some of these items.\n"
-                "OBS: If you chose 'False' to all items, Modules will be skipped all together.",
-                "white",
-            )
+        console.print("[bold cyan]Module settings[/bold cyan]")
+        console.print(
+            "In Canvas, Modules may contain files, HTML pages, and links to external websites.\n"
+            "Specify if Canvas-Sync should avoid syncing some of these items.\n"
+            "If all items are False, modules are skipped."
         )
 
-        print(ANSI.format("\nSync this item\tNumber\t\tItem", "blue"))
+        console.print("[bold cyan]\nSync this item\tNumber\t\tItem[/bold cyan]")
 
         list_of_keys = list(module_settings.keys())
         for index, item in enumerate(list_of_keys):
             boolean = module_settings[item]
-
-            print(
-                "%s\t\t[%s]\t\t%s"
-                % (
-                    ANSI.format(str(boolean), "green" if boolean else "red"),
-                    index + 1,
-                    item,
-                )
+            console.print(
+                f"{'[green]True[/green]' if boolean else '[red]False[/red]'}\t\t[{index + 1}]\t\t{item}"
             )
 
-        print("\n\t\t[%s]\t\t%s" % (0, ANSI.format("Confirm selection", "blue")))
+        console.print("\n\t\t[0]\t\t[bold cyan]Confirm selection[/bold cyan]")
 
-        try:
-            choice = int(input("\nChoose number: "))
-            if choice < 0 or choice > len(module_settings):
-                continue
-        except ValueError:
+        choice = IntPrompt.ask("Choose number", default=0)
+        if choice < 0 or choice > len(module_settings):
             continue
 
         if choice == 0:
@@ -402,122 +300,21 @@ def ask_for_module_settings(module_settings, settings):
 
 
 def ask_for_assignment_sync(settings):
-    choice = -1
-
-    if HAS_QUESTIONARY:
-        return _ask_questionary(
-            questionary.confirm("Synchronize assignments?", default=True)
-        )
-    while choice not in (1, 2):
-        settings.print_advanced_settings(clear=True)
-        print(ANSI.format("\n\nAssignments settings", "announcer"))
-        print(
-            ANSI.format(
-                "Would you like Canvas-Sync to synchronize assignments?\n\n"
-                "The assignment description will be downloaded as a HTML to be viewed offline\n"
-                "and files hosted on the Canvas server that are described in the assignment\n"
-                "description section will be downloaded to the same folder.\n",
-                "white",
-            )
-        )
-
-        print(ANSI.format("1) Sync assignments (default)", "bold"))
-        print(ANSI.format("2) Do not sync assignments", "bold"))
-
-        try:
-            choice = int(input("\nChoose number: "))
-        except ValueError:
-            continue
-
-        if choice == 1:
-            return True
-        elif choice == 2:
-            return False
-        else:
-            continue
+    settings.print_advanced_settings(clear=True)
+    return Confirm.ask("Synchronize assignments?", default=True)
 
 
 def ask_for_download_linked(settings):
-    choice = -1
-
-    if HAS_QUESTIONARY:
-        return _ask_questionary(
-            questionary.confirm(
-                "Enable downloading of linked files referenced in assignment descriptions?",
-                default=True,
-            )
-        )
-    while choice not in (1, 2):
-        settings.print_advanced_settings(clear=True)
-        print(ANSI.format("\n\nAssignments settings", "announcer"))
-        print(
-            ANSI.format(
-                "You have chosen to synchronise assignments. URLs detected in the\n"
-                "description field that point to files on Canvas will be downloaded\n"
-                "to the assignment folder.\n\n"
-                "Canvas-Sync may also attempt to download linked files that are NOT\n"
-                "hosted on the Canvas server itself. Canvas-Sync is looking for URLs that\n"
-                "end in a filename to avoid downloading other linked material such as\n"
-                "web-sites. However, be aware that errors could occur.\n"
-                "\nDo you wish to enable this feature?\n",
-                "white",
-            )
-        )
-
-        print(ANSI.format("1) Enable linked file downloading (default)", "bold"))
-        print(ANSI.format("2) Disable linked file downloading", "bold"))
-
-        try:
-            choice = int(input("\nChoose number: "))
-        except ValueError:
-            continue
-
-        if choice == 1:
-            return True
-        elif choice == 2:
-            return False
-        else:
-            continue
+    settings.print_advanced_settings(clear=True)
+    return Confirm.ask(
+        "Enable downloading of linked files referenced in assignment descriptions?",
+        default=True,
+    )
 
 
 def ask_for_avoid_duplicates(settings):
-    choice = -1
-
-    if HAS_QUESTIONARY:
-        return _ask_questionary(
-            questionary.confirm(
-                "Avoid downloading duplicate files into 'Various Files'?", default=True
-            )
-        )
-    while choice not in (1, 2):
-        settings.print_advanced_settings(clear=True)
-        print(ANSI.format("\n\nVarious files settings", "announcer"))
-        print(
-            ANSI.format(
-                "In addition to synchronizing modules and assignments,\n"
-                "Canvas-Sync will sync files located under the 'Files'\n"
-                "section in Canvas into a 'Various Files' folder.\n"
-                "Often some of the files stored under 'Files' is mentioned in\n"
-                "modules and assignments and may thus already exist in another\n"
-                "folder after running Canvas-Sync.\n\n"
-                "Do you want Canvas-Sync to avoid duplicates by only downloading\n"
-                "files into the 'Various Files' folder, if they are not already\n"
-                "present in one of the modules or assignments folders?\n",
-                "white",
-            )
-        )
-
-        print(ANSI.format("1) Yes, avoid duplicates (default)", "bold"))
-        print(ANSI.format("2) No, download all files to 'Various files'", "bold"))
-
-        try:
-            choice = int(input("\nChoose number: "))
-        except ValueError:
-            continue
-
-        if choice == 1:
-            return True
-        elif choice == 2:
-            return False
-        else:
-            continue
+    settings.print_advanced_settings(clear=True)
+    return Confirm.ask(
+        "Avoid downloading duplicate files into 'Various Files'?",
+        default=True,
+    )

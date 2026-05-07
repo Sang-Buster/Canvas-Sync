@@ -24,7 +24,7 @@ import os
 
 from canvas_sync.entities.assignment import Assignment
 from canvas_sync.entities.canvas_entity import CanvasEntity
-from canvas_sync.utilities.ANSI import ANSI
+from canvas_sync.utilities.console import console
 
 
 class AssignmentsFolder(CanvasEntity):
@@ -57,14 +57,13 @@ class AssignmentsFolder(CanvasEntity):
 
     def __repr__(self):
         """String representation, overwriting base class method"""
-        status = ANSI.format("[SYNCED]", formatting="green")
+        status = "[bold green][SYNCED][/bold green]"
         return (
             status
             + " " * 7
             + "|   "
             + "\t" * self.indent
-            + "%s: %s"
-            % (ANSI.format("Assignments Folder", formatting="assignments"), self.name)
+            + "[white]Assignments Folder[/white]: %s" % self.name
         )
 
     def add_assignments(self):
@@ -76,7 +75,7 @@ class AssignmentsFolder(CanvasEntity):
 
     def walk(self, counter):
         """Walk by adding all Assignment objects to the list of children"""
-        print(str(self))
+        console.print(str(self))
 
         self.add_assignments()
 
@@ -89,7 +88,7 @@ class AssignmentsFolder(CanvasEntity):
         1) Adding all Assignment objects to the list of children
         2) Synchronize all children objects
         """
-        print(str(self))
+        console.print(str(self))
 
         self.add_assignments()
 
@@ -98,7 +97,7 @@ class AssignmentsFolder(CanvasEntity):
 
     def show(self):
         """Show the folder hierarchy by printing every level"""
-        print(str(self))
+        console.print(str(self))
 
         for child in self:
             child.show()

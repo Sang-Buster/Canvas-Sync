@@ -38,13 +38,17 @@ to validate the user input password.
 import os
 import sys
 
+from rich import box
+from rich.panel import Panel
+from rich.table import Table
+
 from canvas_sync.settings import user_prompter
 
 # Third party modules
 # Canvas-Sync modules
 from canvas_sync.settings.cryptography import decrypt, encrypt
 from canvas_sync.utilities import helpers
-from canvas_sync.utilities.ANSI import ANSI
+from canvas_sync.utilities.console import console
 from canvas_sync.utilities.instructure_api import InstructureApi
 
 
@@ -105,11 +109,13 @@ class Settings(object):
         messages = decrypt(encrypted_message, password)
         if not messages:
             # Password file did not exist, set new settings
-            print(
-                ANSI.format(
-                    "\n[ERROR] The hashed password file does not"
-                    "longer exist. You must re-enter settings.",
-                    "announcer",
+            console.print(
+                Panel(
+                    "[bold red]The hashed password file no longer exists. "
+                    "You must re-enter settings.[/bold red]",
+                    title="Error",
+                    border_style="red",
+                    expand=False,
                 )
             )
             input("\nPres enter to continue.")
@@ -156,11 +162,7 @@ class Settings(object):
         try:
             self._set_settings()
         except KeyboardInterrupt:
-            print(
-                ANSI.format(
-                    "\n\n[*] Setup interrupted, nothing was saved.", formatting="red"
-                )
-            )
+            console.print("[bold red][*] Setup interrupted, nothing was saved.[/bold red]")
             sys.exit()
 
         self.write_settings()
@@ -206,7 +208,13 @@ class Settings(object):
     def write_settings(self):
         self.print_settings(first_time_setup=False, clear=True)
         self.print_advanced_settings(clear=False)
-        print(ANSI.format("\n\nThese settings will be saved", "announcer"))
+        console.print(
+            Panel(
+                "[bold cyan]These settings will be saved[/bold cyan]",
+                expand=False,
+                border_style="cyan",
+            )
+        )
 
         # Write password encrypted settings to hidden file in home directory
         with open(self.settings_path, "wb") as out_file:
@@ -234,47 +242,33 @@ class Settings(object):
         if clear:
             helpers.clear_console()
 
-        print(ANSI.format("\nAdvanced settings", "announcer"))
-
-        module_settings_string = (
-            ANSI.BOLD + "[*] Sync module items:        \t" + ANSI.ENDC
+        table = Table(title="Advanced Settings", box=box.SIMPLE_HEAVY)
+        table.add_column("Setting", style="bold cyan")
+        table.add_column("Value")
+        enabled_module_items = [
+            item for item, enabled in self.modules_settings.items() if enabled
+        ]
+        table.add_row(
+            "Sync module items",
+            ", ".join(enabled_module_items) if enabled_module_items else "[red]None[/red]",
         )
-
-        count = 0
-        for item in self.modules_settings:
-            if self.modules_settings[item]:
-                d = " & " if count != 0 else ""
-                module_settings_string += d + ANSI.BLUE + item + ANSI.ENDC
-                count += 1
-
-        if count == 0:
-            module_settings_string += ANSI.RED + "False" + ANSI.ENDC
-
-        print(module_settings_string)
-        print(
-            ANSI.BOLD
-            + "[*] Sync assignments:         \t"
-            + ANSI.ENDC
-            + (ANSI.GREEN if self.sync_assignments else ANSI.RED)
-            + str(self.sync_assignments)
-            + ANSI.ENDC
+        table.add_row(
+            "Sync assignments",
+            "[green]True[/green]" if self.sync_assignments else "[red]False[/red]",
         )
-        print(
-            ANSI.BOLD
-            + "[*] Download linked files:    \t"
-            + ANSI.ENDC
-            + (ANSI.GREEN if self.download_linked else ANSI.RED)
-            + str(self.download_linked)
-            + ANSI.ENDC
+        table.add_row(
+            "Download linked files",
+            "[green]True[/green]" if self.download_linked else "[red]False[/red]",
         )
-        print(
-            ANSI.BOLD
-            + "[*] Avoid item duplicates:    \t"
-            + ANSI.ENDC
-            + (ANSI.GREEN if self.avoid_duplicates else ANSI.RED)
-            + str(self.avoid_duplicates)
-            + ANSI.ENDC
+        table.add_row(
+            "Avoid item duplicates",
+            "[green]True[/green]" if self.avoid_duplicates else "[red]False[/red]",
         )
+        table.add_row(
+            "Use nicknames",
+            "[green]True[/green]" if self.use_nicknames else "[red]False[/red]",
+        )
+        console.print(table)
 
     def print_settings(self, first_time_setup=True, clear=True):
         """
@@ -285,63 +279,32 @@ class Settings(object):
             helpers.clear_console()
 
         if first_time_setup:
-            print(
-                ANSI.format(
-                    "This is a first time setup.\nYou must specify "
-                    "at least the following settings"
-                    " in order to run Canvas-Sync:\n",
-                    "announcer",
+            console.print(
+                Panel(
+                    "This is a first time setup.\nYou must specify at least the "
+                    "following settings to run Canvas-Sync.",
+                    title="Setup",
+                    border_style="cyan",
+                    expand=False,
                 )
             )
         else:
-            print(ANSI.format("-----------------------------", "file"))
-            print(ANSI.format("Canvas-Sync - Current settings", "file"))
-            print(ANSI.format("-----------------------------\n", "file"))
-            print(ANSI.format("Standard settings", "announcer"))
-
-        print(
-            ANSI.BOLD
-            + "[*] Sync path:             \t"
-            + ANSI.ENDC
-            + ANSI.BLUE
-            + self.sync_path
-            + ANSI.ENDC
-        )
-        print(
-            ANSI.BOLD
-            + "[*] Canvas domain:         \t"
-            + ANSI.ENDC
-            + ANSI.BLUE
-            + self.domain
-            + ANSI.ENDC
-        )
-        print(
-            ANSI.BOLD
-            + "[*] Authentication token:  \t"
-            + ANSI.ENDC
-            + ANSI.BLUE
-            + self.token
-            + ANSI.ENDC
-        )
-
-        if len(self.courses_to_sync) != 0:
-            if self.courses_to_sync[0] == "Not set":
-                d = ""
-            else:
-                d = "1) "
-            print(
-                ANSI.BOLD
-                + "[*] Courses to be synced:  \t%s" % d
-                + ANSI.ENDC
-                + ANSI.BLUE
-                + self.courses_to_sync[0]
-                + ANSI.ENDC
+            console.print(
+                Panel(
+                    "[bold cyan]Canvas-Sync - Current settings[/bold cyan]",
+                    expand=False,
+                    border_style="cyan",
+                )
             )
 
-            for index, course in enumerate(self.courses_to_sync[1:]):
-                print(
-                    " " * 27 + "\t%s) " % (index + 2) + ANSI.BLUE + course + ANSI.ENDC
-                )
+        table = Table(title="Standard Settings", box=box.SIMPLE_HEAVY)
+        table.add_column("Setting", style="bold cyan")
+        table.add_column("Value")
+        table.add_row("Sync path", self.sync_path)
+        table.add_row("Canvas domain", self.domain)
+        table.add_row("Authentication token", self.token)
+        table.add_row("Courses to be synced", ", ".join(self.courses_to_sync))
+        console.print(table)
 
     def show(self, quit=True):
         """
@@ -366,12 +329,14 @@ class Settings(object):
         Prints error message for when the auth token stored in the
         settings is no longer valid
         """
-        print(
-            "\n\n[ERROR] The authentication token has been reset.\n"
-            "        You must generate a new from the canvas webpage and"
-            " reset the Canvas-Sync settings\n"
-            "        using the --setup command line arguments or from the"
-            " main menu."
+        console.print(
+            Panel(
+                "The authentication token has been reset.\n"
+                "Generate a new token from Canvas and run `canvas setup`.",
+                title="Authentication Error",
+                border_style="red",
+                expand=False,
+            )
         )
 
     def show_main_screen(self, settings_file_exists):
