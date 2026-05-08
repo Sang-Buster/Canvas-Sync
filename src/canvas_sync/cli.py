@@ -159,6 +159,9 @@ def sync(
         console.print(Panel(":sparkles: [green]Sync complete![/green]", expand=False))
     except KeyboardInterrupt:
         console.print(":warning: [yellow]Sync interrupted by user.[/yellow]")
+    except (PermissionError, FileNotFoundError, ConnectionError, ValueError) as exc:
+        console.print(f":x: [red]API error:[/red] {exc}")
+        raise typer.Exit(code=1)
 
 
 @app.command()

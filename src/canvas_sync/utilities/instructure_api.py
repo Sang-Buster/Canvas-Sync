@@ -35,10 +35,28 @@ class InstructureApi(object):
 
         api_call : string | Any call to the Instructure API ("/api/v1/courses" for instance)
         """
-        return requests.get(
+        response = requests.get(
             "%s%s" % (self.settings.domain, api_call),
             headers={"Authorization": "Bearer %s" % self.settings.token},
         )
+        if response.status_code == 401:
+            raise PermissionError(
+                "Authentication failed (401). Check that your API token is correct."
+            )
+        if response.status_code == 404:
+            raise FileNotFoundError(
+                "Resource not found (404): %s" % api_call
+            )
+        if response.status_code == 503:
+            raise ConnectionError(
+                "Canvas server is temporarily unavailable (503). "
+                "Check https://status.instructure.com and try again later."
+            )
+        if not response.ok:
+            raise ConnectionError(
+                "API request failed with status %d: %s" % (response.status_code, api_call)
+            )
+        return response
 
     def get_json(self, api_call):
         """
@@ -47,7 +65,21 @@ class InstructureApi(object):
 
         api_call : string | Any call to the Instructure API ("/api/v1/courses" for instance)
         """
-        return json.loads(self._get(api_call).text)
+        response = self._get(api_call)
+        text = response.text.strip()
+        if not text:
+            raise ValueError(
+                "Empty response from API: %s\n"
+                "Verify that the domain ('%s') is correct and reachable."
+                % (api_call, self.settings.domain)
+            )
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                "Could not parse API response as JSON for %s.\n"
+                "Response text: %s" % (api_call, text[:200])
+            ) from exc
 
     def get_json_list(self, api_call):
         data = self.get_json(api_call)
